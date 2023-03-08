@@ -20,12 +20,12 @@ pros::MotorGroup left_side_motors({left_front_motor, left_middle_motor, left_bac
 pros::MotorGroup right_side_motors({right_front_motor, right_middle_motor, right_back_motor});
 
 pros::Rotation rotation_right(1, true); // port 1, not reversed
-pros::Rotation rotation_left(5, false); // port 5, not reversed
+pros::Rotation rotation_left(5, true); // port 5, not reversed
 pros::Rotation rotation_back(9, false); // port 9, not reversed
 
 pros::Imu inertial_sensor(10); // port 9
 
-lemlib::TrackingWheel left_tracking_wheel(&rotation_left, 2.75, 9.125); //
+lemlib::TrackingWheel left_tracking_wheel(&rotation_left, 2.75, -9.125); //
 lemlib::TrackingWheel right_tracking_wheel(&rotation_right, 2.75, 9.125); //
 lemlib::TrackingWheel back_tracking_wheel(&rotation_back, 2.75, 3.5); //
 
@@ -79,6 +79,7 @@ lemlib::Chassis chassis(drivetrain, lateralController, angularController, sensor
 void screen() {
     // loop forever
     while (true) {
+        //chassis.setPose(0, 0, 0);
         lemlib::Pose pose = chassis.getPose(); // get the current position of the robot
         pros::lcd::print(0, "x: %f", pose.x); // print the x position
         pros::lcd::print(1, "y: %f", pose.y); // print the y position
@@ -93,7 +94,7 @@ void initialize() {
     chassis.setPose(0, 0, 0);
     printf("Calibrated");
     pros::lcd::initialize();
-
+    //chassis.moveTo(3,3,5000,100);
 }
 
 /**
@@ -126,8 +127,10 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-    printf("Begining autonomous");
+    //printf("Begining autonomous");
+    chassis.setPose(0, 0, 0);
     chassis.moveTo(0,10,5000,100);
+    
 }
 
 /**
@@ -144,16 +147,10 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+    chassis.setPose(0, 0, 0);
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 	while (true) {
-        lemlib::Pose pose = chassis.getPose(); // get the current position of the robot
-        pros::lcd::print(0, "x: %f", pose.x); // print the x position
-        pros::lcd::print(1, "y: %f", pose.y); // print the y position
-        pros::lcd::print(2, "heading: %f", pose.theta); // print the heading
-
-        printf("x coord%f\n",pose.theta);
-    
         right_front_motor.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_RIGHT_X));
         right_middle_motor.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_RIGHT_X));
         right_back_motor.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_RIGHT_X));
