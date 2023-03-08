@@ -1,5 +1,6 @@
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "pros/llemu.hpp"
 
 //https://lemlib.github.io/LemLib/html/md_docs_tutorials_3_tuning_and_moving.html
 
@@ -89,7 +90,9 @@ void screen() {
 void initialize() {
     chassis.calibrate(); // calibrate the chassis
     pros::Task screenTask(screen); // create a task to print the position to the screen
+    chassis.setPose(0, 0, 0);
     printf("Calibrated");
+    pros::lcd::initialize();
 
 }
 
